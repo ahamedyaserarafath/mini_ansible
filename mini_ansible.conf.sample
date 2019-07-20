@@ -1,0 +1,59 @@
+# [UniqueName]
+# ip = IP/DNS
+# username = ubuntu
+# password = test@123
+# or
+# key = /tmp/test.pem
+# cmd = apt-get install python
+# or
+# local_path = file.txt
+# remote_path = /tmp/.
+
+[master_kubernetes]
+ip = 10.10.10.10
+username = ubuntu
+private_key = /tmp/kub.pem
+command = sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
+          curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+          sudo apt-get update
+          sudo apt-get install -y docker-ce kubelet kubeadm kubectl
+          echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+          sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=all
+          mkdir -p $HOME/.kube
+          sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+          sudo chown $(id -u):$(id -g) $HOME/.kube/config
+          sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+          sudo iptables -F
+
+
+
+[slave_kubernetes]
+ip = 10.10.10.11
+username = ubuntu
+private_key = /tmp/kub.pem
+command = sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs)  stable"
+          curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+          sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+          sudo apt-get update
+          sudo apt-get install -y docker-ce kubelet kubeadm kubectl
+          echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+
+[send_yaml_file]
+ip = 10.10.10.10
+username = ubuntu
+private_key = /tmp/kub.pem
+local_path = microservice_prometheus.yaml
+remote_path = /tmp/
+
+[exceute_deployment]
+ip = 10.10.10.10
+username = ubuntu
+private_key = /tmp/kub.pem
+command = kubectl create -f /tmp/microservice_prometheus.yaml
