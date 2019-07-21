@@ -101,22 +101,19 @@ class RemoteShell(object):
                 return 'Success'
             else:
                 return 'Failed'
-        except Exception:
-            return 'Error'
+        except Exception as e:
+            print("Exception for your reference : " +str(e))
 
     def file_send(self, localpath, remotepath):
         """."""
         try:
             self.localpath = localpath
             self.remotepath = remotepath
-            try:
-                self.result = execute(self._file_send)
-            except:
-                print('Some problem in sending the file: ' + localpath + ' to ' + env.hosts[0])
+            self.result = execute(self._file_send)
             result = []
-            for kkk, v in self.result.items():
-                result.append(kkk + ':' + v + '\n')
+            for temp, value in self.result.items():
+                result.append(temp + ':' + value + '\n')
             return ''.join(result)
-
         except Exception as e:
-            print(e)
+            print('Some problem in sending the file: ' + localpath + ' to ' + env.hosts)
+            print("Exception for your reference : " +str(e))

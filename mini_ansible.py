@@ -8,11 +8,11 @@ from fabric.context_managers import *
 from datetime import datetime
 from ConfigParser import SafeConfigParser
 
-ssh.util.log_to_file("./logs/paramiko.log", 10)
 
 class MiniAnsible():
 
     def __init__(self,conf_file="mini_ansible.conf"):
+        self.ip = None
         self.username = None
         self.password = None
         self.command_list = None
@@ -20,8 +20,13 @@ class MiniAnsible():
         self.local_path = None
         self.remote_path = None
         self.conf_file = os.path.abspath(conf_file)
+        self.log_directory = "logs"
         if not os.path.isfile(self.conf_file):
             self.DoError("No such file found : %s" % conf_file, "red")
+        if not os.path.exists(self.log_directory):
+            os.makedirs(self.log_directory)
+        ssh.util.log_to_file(self.log_directory+"/mini_ansible.log", 10)
+
 
     def DoError (self,Error) :
         sys.exit(Error)
@@ -64,7 +69,7 @@ class MiniAnsible():
                 if self.private_key:
                     if self.local_path and self.remote_path:
                         self.send_file_remote(self.local_path,self.remote_path,self.ip,self.username,private_key=self.private_key)
-                        print("File sent succesfully : " + self.remote_path)
+                        print("File sent succesfully : " + self.remote_path + "/" + str(self.local_path.split("/")[-1]))
                     if self.command_list:
                         self.execute_command_list_remotely(self.command_list,self.ip,self.username,private_key=self.private_key)
                     elif not self.local_path and not self.remote_path:
@@ -72,7 +77,7 @@ class MiniAnsible():
                 if self.password:
                     if self.local_path and self.remote_path:
                         self.send_file_remote(self.local_path,self.remote_path,self.ip,self.username,password=self.password)
-                        print("File sent succesfully : " + self.remote_path)
+                        print("File sent succesfully : " + self.remote_path + "/" + str(self.local_path.split("/")[-1]))
                     if self.command_list:
                         self.execute_command_list_remotely(self.command_list,self.ip,self.username,password=self.password)
                     elif not self.local_path and not self.remote_path:
@@ -102,7 +107,7 @@ class MiniAnsible():
                 print("\n")
             del ssh_connect_remote
         except Exception as e:
-            self.DoError("Exception in execute_command :"+str(e) )
+            self.DoError("Exception in execute_command_list_remotely :"+str(e) )
 
     def send_file_remote(self,local_path,remote_path,ip,user,password=None,private_key=None):
         try:
@@ -113,7 +118,7 @@ class MiniAnsible():
             ssh_connect_remote.file_send(local_path,remote_path)
             del ssh_connect_remote
         except Exception as e:
-            self.DoError("Exception in execute_command :"+str(e) )
+            self.DoError("Exception in send_file_remote :"+str(e) )
 
 
 
