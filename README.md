@@ -6,10 +6,10 @@
 # Introduction
 Tired of installing ansible and writing configuration which you don't know, but you know the command to install means you are in right place, I have a made mini ansible just clone and add ur command on conf it works like a charm.
 
-- [Pre-requisites](#pre-requisites)
+# Pre-requisites
 Just python typically every linux os has default python package installed so just clone and try it out.
 
-- [Installation and configuration](#Installation-and-configuration)
+# Installation and configuration
 Clone the project locally to your linux machine, it support execution of commands as well as sending a file from local.
 This project both IP and DNS as well it can be either password or key.
 
