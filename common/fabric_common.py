@@ -45,6 +45,7 @@ class RemoteShell(object):
         self.cmd = cmd
         self.parallel = parallel
         env.parallel = parallel
+        env.abort_on_prompts = True        
 
     def _exec_remote_cmd(self):
         ''' Private function to execute the command with the default settings. Not to be used by the external system'''
